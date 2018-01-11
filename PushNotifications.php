@@ -2,7 +2,7 @@
 // Server file
 class PushNotifications {
 	// (Android)API access key from Google API's Console.
-	private static $API_ACCESS_KEY = 'AAAAMffK6G0:APA91bG6o2ueD-l-QRe0mjrMHqfpDRw_wLTuHOkY6qnF0BILKdv8zJohTmLpof1Hs-WdzWCG2ZfIJymmVGcF5diZkMSuqyfMd37Okq-JYBQjhYILFOFO2i8-J13eXILQ02NfM2Q_nvGp';
+	private static $API_ACCESS_KEY = 'AAAAKj_dpoE:APA91bE1eNkF6_xYD9PYNxPafcI720AW3AIW6IEPUljkWDVwU9KBcVgaf70lKj9cvpiRrsybtVFDNENwahAoZEyPLDvYh7m-y8j52vpKCl8ywtD0iD3NjE5wvrBGsWL2Mc3CRlsmyPbt';
 	// (iOS) Private key's passphrase.
 	private static $passphrase = 'wss@WSS2017';
 	
@@ -21,7 +21,8 @@ class PushNotifications {
             'subtitle' => '',
             'tickerText' => '',
             'msgcnt' => 1,
-            'vibrate' => 1
+            'vibrate' => 1,
+            'sound' => 'default'
         );
     
         $headers = array(
@@ -44,13 +45,11 @@ class PushNotifications {
 
         $ctx = stream_context_create();
         // ck.pem is your certificate file
-        stream_context_set_option($ctx, 'ssl', 'local_cert', 'passin.pem');
-        stream_context_set_option($ctx, 'ssl', 'passphrase', self::$passphrase);
+        stream_context_set_option($ctx, 'ssl', 'local_cert', 'apn.pem');
+        stream_context_set_option($ctx, 'ssl', 'passphrase', 'wss@WSS2017');
 
         // Open a connection to the APNS server
-        $fp = stream_socket_client(
-            'ssl://gateway.sandbox.push.apple.com:2195', $err,
-            $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+        $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
 
         if (!$fp)
             exit("Failed to connect: $err $errstr" . PHP_EOL);
@@ -77,9 +76,9 @@ class PushNotifications {
         fclose($fp);
 
         if (!$result)
-            return 'Message not delivered' . PHP_EOL;
+            echo 'Message not delivered' . PHP_EOL;
         else
-            return 'Message successfully delivered' . PHP_EOL;
+            echo 'Message successfully delivered' . PHP_EOL;
 
     }
 
